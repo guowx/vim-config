@@ -112,6 +112,8 @@ endif
 
 " Start new line from any cursor position in insert-mode
 inoremap <S-Return> <C-o>o
+" esc by jk
+inoremap jk <Esc>
 
 " Deletes selection and start insert mode
 " xnoremap <BS> "_xi
