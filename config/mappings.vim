@@ -270,10 +270,10 @@ nmap <Leader>tt <cmd>echo
 " Terminal mappings
 if exists(':tnoremap')
 	if has('nvim')
-		tnoremap jj <C-\><C-n>
+		tnoremap jk <C-\><C-n>
 	else
 		tnoremap <Esc><Esc>  <C-w>N
-		tnoremap jj          <C-w>N
+		tnoremap jk          <C-w>N
 	endif
 endif
 
