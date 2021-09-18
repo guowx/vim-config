@@ -7,8 +7,12 @@ let g:asynctasks_term_reuse = 1
 " let g:asynctasks_extra_config = [
 "    \ '~/.config/nvim/global_tasks.ini',
 "    \ ]
+"
+nnoremap  [asynctask_key]   <Nop>
+nmap      r [asynctask_key]
 noremap <silent>rr :AsyncTask file-run<cr>
 noremap <silent>rb :AsyncTask file-build<cr>
 noremap <silent>rpi :AsyncTask project-init<cr>
 noremap <silent>rpr :AsyncTask project-run<cr>
 noremap <silent>rpb :AsyncTask project-build<cr>
+
