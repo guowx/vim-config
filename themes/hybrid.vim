@@ -78,6 +78,11 @@ highlight! WarningMsg  ctermfg=100 guifg=#CCC566
 highlight! link QuickFixLine WildMenu
 highlight! link lspReference Visual
 
+highlight! DiagnosticError ctermfg=1   guifg=Red
+highlight! DiagnosticWarn  ctermfg=3   guifg=Orange
+highlight! DiagnosticInfo  ctermfg=4   guifg=LightBlue
+highlight! DiagnosticHint  ctermfg=143 guifg=#b5bd68
+
 " if has('nvim') || has('patch-7.4.2218')
 " 	highlight EndOfBuffer gui=NONE guifg=#303030
 " endif
@@ -194,9 +199,10 @@ highlight! link ShotFGraph SpellRare
 highlight! link ShotFBlank DiffAdd
 " }}}
 
-" Plugin: vim-signature {{{
-highlight! SignatureMarkText    ctermfg=11 guifg=#756207 ctermbg=234 guibg=#1c1c1c
-highlight! SignatureMarkerText  ctermfg=12 guifg=#4EA9D7 ctermbg=234 guibg=#1c1c1c
+" Plugin: chentau/marks.nvim {{{
+highlight! MarkSignHL ctermfg=12 guifg=#4EA9D7
+" highlight! default link MarkSignNumHL CursorLineNr
+" highlight! default link MarkVirtTextHL Comment
 " }}}
 
 " Plugin: vim-choosewin {{{

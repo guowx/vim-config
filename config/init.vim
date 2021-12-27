@@ -142,7 +142,7 @@ function! s:use_dein()
 		let g:dein#install_progress_type = 'echo'
 		let g:dein#install_message_type = 'echo'
 		let g:dein#install_max_processes = 10
-		let g:dein#enable_notification = v:true
+		" let g:dein#enable_notification = v:true
 
 		" Add dein to vim's runtimepath
 		if &runtimepath !~# '/dein.vim'
@@ -197,9 +197,6 @@ function! s:use_dein()
 		endif
 	endif
 
-	" autocmd user_events VimEnter *
-	"	\ filetype plugin indent on
-	"	\| syntax enable
 	filetype plugin indent on
 	syntax enable
 endfunction
@@ -330,7 +327,7 @@ function! s:load_yaml(filename)
 	elseif s:convert_tool ==# 'python'
 		let l:cmd = "python -c 'import sys,yaml,json; y=yaml.safe_load(sys.stdin.read()); print(json.dumps(y))'"
 	elseif s:convert_tool ==# 'yq'
-		let l:cmd = 'yq e -j -I 0'
+		let l:cmd = 'yq e -o=json -I 0'
 	else
 		let l:cmd = s:convert_tool
 	endif

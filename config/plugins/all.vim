@@ -73,33 +73,6 @@ if dein#tap('vim-indent-guides')
 	nmap <Leader>ti <cmd>IndentGuidesToggle<CR>
 endif
 
-if dein#tap('vim-signature')
-	let g:SignatureIncludeMarks = 'abcdefghijkloqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-	let g:SignatureMap = {
-		\ 'Leader':            'm',
-		\ 'ListBufferMarks':   'm/',
-		\ 'ListBufferMarkers': 'm?',
-		\ 'PlaceNextMark':     'm,',
-		\ 'ToggleMarkAtLine':  'mm',
-		\ 'PurgeMarksAtLine':  'm-',
-		\ 'DeleteMark':        'dm',
-		\ 'PurgeMarks':        'm<Space>',
-		\ 'PurgeMarkers':      'm<BS>',
-		\ 'GotoNextLineAlpha': "']",
-		\ 'GotoPrevLineAlpha': "'[",
-		\ 'GotoNextSpotAlpha': '`]',
-		\ 'GotoPrevSpotAlpha': '`[',
-		\ 'GotoNextLineByPos': "]'",
-		\ 'GotoPrevLineByPos': "['",
-		\ 'GotoNextSpotByPos': 'mn',
-		\ 'GotoPrevSpotByPos': 'mp',
-		\ 'GotoNextMarker':    ']-',
-		\ 'GotoPrevMarker':    '[-',
-		\ 'GotoNextMarkerAny': ']=',
-		\ 'GotoPrevMarkerAny': '[=',
-		\ }
-endif
-
 if dein#tap('nvim-bqf')
 	nmap <Leader>q <cmd>lua require('user').qflist.toggle()<CR>
 endif
@@ -108,12 +81,12 @@ if dein#tap('goto-preview')
 	nnoremap gpd <cmd>lua require('goto-preview').goto_preview_definition()<CR>
 	nnoremap gpi <cmd>lua require('goto-preview').goto_preview_implementation()<CR>
 	nnoremap gpc <cmd>lua require('goto-preview').close_all_win()<CR>
+	nnoremap gpr <cmd>lua require('goto-preview').goto_preview_references()<CR>
 endif
 
 if dein#tap('committia.vim')
 	let g:committia_hooks = {}
 	function! g:committia_hooks.edit_open(info)
-		setlocal winminheight=1 winheight=10
 		resize 10
 		imap <buffer><C-d> <Plug>(committia-scroll-diff-down-half)
 		imap <buffer><C-u> <Plug>(committia-scroll-diff-up-half)
@@ -144,8 +117,8 @@ if dein#tap('todo-comments.nvim')
 endif
 
 if dein#tap('trouble.nvim')
-	nnoremap <leader>e <cmd>TroubleToggle lsp_document_diagnostics<CR>
-	nnoremap <leader>r <cmd>TroubleToggle lsp_workspace_diagnostics<CR>
+	nnoremap <leader>e <cmd>TroubleToggle document_diagnostics<CR>
+	nnoremap <leader>r <cmd>TroubleToggle workspace_diagnostics<CR>
 	nnoremap <leader>xq <cmd>TroubleToggle quickfix<CR>
 	nnoremap <leader>xl <cmd>TroubleToggle loclist<CR>
 	nnoremap ]t <cmd>lua require("trouble").next({skip_groups = true, jump = true})<CR>
@@ -174,9 +147,9 @@ if dein#tap('gina.vim')
 	nnoremap <silent> <leader>ga <cmd>Gina add %:p<CR>
 	nnoremap <silent> <leader>gd <cmd>Gina compare<CR>
 	nnoremap <silent> <leader>gc <cmd>Gina commit<CR>
-	nnoremap <silent> <leader>gb <cmd>Gina blame --width=40<CR>
-	nnoremap <silent> <leader>gs <cmd>Gina status -s<CR>
-	nnoremap <silent> <leader>gl <cmd>Gina log --graph --all<CR>
+	nnoremap <silent> <leader>gb <cmd>Gina blame<CR>
+	nnoremap <silent> <leader>gs <cmd>Gina status<CR>
+	nnoremap <silent> <leader>gl <cmd>Gina log --all<CR>
 	nnoremap <silent> <leader>gF <cmd>Gina! fetch<CR>
 	nnoremap <silent> <leader>gp <cmd>Gina! push<CR>
 	nnoremap <silent> <leader>go <cmd>,Gina browse :<CR>
@@ -264,32 +237,6 @@ endif
 if dein#tap('dsf.vim')
 	nmap dsf <Plug>DsfDelete
 	nmap csf <Plug>DsfChange
-endif
-
-if dein#tap('caw.vim')
-	function! InitCaw() abort
-		if &l:modifiable && &buftype ==# '' && &filetype !=# 'gitrebase'
-			xmap <buffer> <Leader>V <Plug>(caw:wrap:toggle)
-			nmap <buffer> <Leader>V <Plug>(caw:wrap:toggle)
-			xmap <buffer> <Leader>v <Plug>(caw:hatpos:toggle)
-			nmap <buffer> <Leader>v <Plug>(caw:hatpos:toggle)
-			nmap <buffer> gc <Plug>(caw:prefix)
-			xmap <buffer> gc <Plug>(caw:prefix)
-			nmap <buffer> gcc <Plug>(caw:hatpos:toggle)
-			xmap <buffer> gcc <Plug>(caw:hatpos:toggle)
-		else
-			silent! nunmap <buffer> <Leader>V
-			silent! xunmap <buffer> <Leader>V
-			silent! nunmap <buffer> <Leader>v
-			silent! xunmap <buffer> <Leader>v
-			silent! nunmap <buffer> gc
-			silent! xunmap <buffer> gc
-			silent! nunmap <buffer> gcc
-			silent! xunmap <buffer> gcc
-		endif
-	endfunction
-	autocmd user_events FileType * call InitCaw()
-	call InitCaw()
 endif
 
 " vim: set ts=2 sw=2 tw=80 noet :
