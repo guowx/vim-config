@@ -16,3 +16,4 @@ noremap <silent>rpi :AsyncTask project-init<cr>
 noremap <silent>rpr :AsyncTask project-run<cr>
 noremap <silent>rpb :AsyncTask project-build<cr>
 
+set wrap "不加换行符，折行显示 "
