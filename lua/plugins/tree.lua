@@ -9,7 +9,7 @@ vim.g.nvim_tree_respect_buf_cwd = 1
 
 vim.g.nvim_tree_git_hl = 0
 vim.g.nvim_tree_highlight_opened_files = 0
-vim.g.nvim_tree_indent_markers = 1
+-- vim.g.nvim_tree_indent_markers = 0
 vim.g.nvim_tree_add_trailing = 1
 vim.g.nvim_tree_create_in_closed_folder = 0
 
@@ -95,7 +95,7 @@ require('nvim-tree').setup({
 	},
 
 	update_cwd = true,
-	auto_close = true,
+	auto_close = false,
 	open_on_setup = false,
 
 	-- updates the root directory of the tree on `DirChanged` (when your run `:cd` usually)

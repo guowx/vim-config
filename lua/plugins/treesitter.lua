@@ -26,7 +26,8 @@ parser_configs.org = {
 -- Setup treesitter
 require('nvim-treesitter.configs').setup({
 	-- all, maintained, or list of languages
-	ensure_installed = 'maintained',
+	-- ensure_installed = 'maintained',
+	ensure_installed = {"c","cpp","lua","python","vim"},
 
 	highlight = {
 		enable = true,
