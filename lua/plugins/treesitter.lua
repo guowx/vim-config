@@ -27,17 +27,8 @@ parser_configs.http = {
 -- Setup treesitter
 require('nvim-treesitter.configs').setup({
 	-- all, maintained, or list of languages
-	ensure_installed = {
-		'bash', 'c', 'clojure', 'cmake', 'comment', 'commonlisp',
-		'cpp', 'css', 'dart', 'dockerfile', 'dot', 'fennel', 'fish',
-		'go', 'gomod', 'gowork', 'graphql', 'hack', 'haskell', 'hcl',
-		'help', 'html', 'http', 'java', 'javascript', 'jsdoc', 'json',
-		'json5', 'jsonc', 'julia', 'kotlin', 'latex', 'llvm', 'lua',
-		'make', 'markdown', 'ninja', 'nix', 'norg', 'perl', 'php',
-		'pug', 'python', 'query', 'r', 'regex', 'rst', 'ruby', 'rust',
-		'scala', 'scheme', 'scss', 'svelte', 'todotxt', 'toml', 'tsx',
-		'typescript', 'vala', 'vim', 'vue', 'yaml', 'zig',
-	},
+	-- ensure_installed = 'maintained',
+	ensure_installed = {"c","cpp","lua","python","vim"},
 
 	highlight = {
 		enable = true,

@@ -1,3 +1,4 @@
 - repo: skywind3000/asynctasks.vim
 - repo: skywind3000/asyncrun.vim
 - { repo: lewis6991/gitsigns.nvim, if: 0 }
+- { repo: rcarriga/nvim-notify, if: 0 }
