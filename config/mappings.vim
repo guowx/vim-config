@@ -113,6 +113,9 @@ endif
 " Start new line from any cursor position in insert-mode
 inoremap <S-Return> <C-o>o
 
+" map jk to esc
+inoremap jk <Esc>
+
 " Deletes selection and start insert mode
 " xnoremap <BS> "_xi
 
@@ -257,10 +260,10 @@ nmap <Leader>tt <cmd>echo
 " Terminal mappings
 if exists(':tnoremap')
 	if has('nvim')
-		tnoremap jj <C-\><C-n>
+		tnoremap jk <C-\><C-n>
 	else
 		tnoremap <Esc><Esc>  <C-w>N
-		tnoremap jj          <C-w>N
+		tnoremap jk          <C-w>N
 	endif
 endif
 

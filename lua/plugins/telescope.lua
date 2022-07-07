@@ -218,7 +218,7 @@ local setup = function()
 			mappings = {
 
 				i = {
-					['jj'] = { '<Esc>', type = 'command' },
+					['jk'] = { '<Esc>', type = 'command' },
 
 					['<Tab>'] = actions.move_selection_next,
 					['<S-Tab>'] = actions.move_selection_previous,
