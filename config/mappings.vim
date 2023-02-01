@@ -3,6 +3,7 @@
 " Settings:
 " - g:disable_mappings - Set true to disable this file entirely.
 " - g:enable_universal_quit_mapping - Toggle 'q' for :quit mapping.
+" - g:elite_mode - Enable to map arrow keys to window resize.
 
 if get(g:, 'disable_mappings')
 	finish
@@ -28,16 +29,17 @@ endif
 nmap <Leader><Leader> V
 xmap <Leader><Leader> <Esc>
 
-" Toggle fold
-nnoremap <CR> za
+" Toggle fold or select option from popup menu
+nnoremap <expr><CR> pumvisible() ? '<CR>' : 'za'
 
 " Focus the current fold by closing all others
 nnoremap <S-Return> zMzv
 
-" The plugin rhysd/accelerated-jk moves through display-lines in normal mode,
-" these mappings will move through display-lines in visual mode too.
-xnoremap j gj
-xnoremap k gk
+" Moves through display-lines, unless count is provided.
+nnoremap <expr> j v:count > 0 ? "m'" . v:count . 'j' : 'gj'
+nnoremap <expr> k v:count > 0 ? "m'" . v:count . 'k' : 'gk'
+xnoremap <expr> j v:count > 0 ? "m'" . v:count . 'j' : 'gj'
+xnoremap <expr> k v:count > 0 ? "m'" . v:count . 'k' : 'gk'
 
 " Easier line-wise movement
 nnoremap gh g^
@@ -224,6 +226,8 @@ nmap <Leader>ts <cmd>setlocal spell!<CR>
 nmap <Leader>tn <cmd>setlocal nonumber!<CR>
 nmap <Leader>tl <cmd>setlocal nolist!<CR>
 nmap <Leader>th <cmd>nohlsearch<CR>
+nmap <Leader>tp <cmd>lua require('user').diagnostic.toggle(false)<CR>
+nmap <Leader>tP <cmd>lua require('user').diagnostic.toggle(true)<CR>
 
 " Smart wrap toggle (breakindent and colorcolumn toggle as-well)
 nmap <Leader>tw <cmd>execute('setlocal wrap! breakindent! colorcolumn=' .
@@ -277,6 +281,9 @@ nnoremap <Leader>S ^vg_y:execute @@<CR>:echo 'Sourced line.'<CR>
 " Jump entire buffers in jumplist
 nnoremap g<C-i> <cmd>call <SID>jump_buffer(-1)<CR>
 nnoremap g<C-o> <cmd>call <SID>jump_buffer(1)<CR>
+
+" Context aware menu. See lua/contextmenu.lua
+nnoremap <LocalLeader>c  <cmd>lua require'contextmenu'.show()<CR>
 
 if has('mac')
 	" Open the macOS dictionary on current word
@@ -455,7 +462,7 @@ endfunction "}}}
 
 if dein#tap('telescope.nvim')
 	" General pickers
-	nnoremap <localleader>r <cmd>Telescope resume<CR>
+	nnoremap <localleader>r <cmd>Telescope resume initial_mode=normal<CR>
 	nnoremap <localleader>R <cmd>Telescope pickers<CR>
 	nnoremap <localleader>f <cmd>Telescope find_files<CR>
 	nnoremap <localleader>g <cmd>Telescope live_grep<CR>
@@ -467,7 +474,7 @@ if dein#tap('telescope.nvim')
 	nnoremap <localleader>t <cmd>Telescope lsp_dynamic_workspace_symbols<CR>
 	nnoremap <localleader>v <cmd>Telescope registers<CR>
 	nnoremap <localleader>u <cmd>Telescope spell_suggest<CR>
-	nnoremap <localleader>s <cmd>Telescope session-lens search_session<CR>
+	nnoremap <localleader>s <cmd>Telescope persisted<CR>
 	nnoremap <localleader>x <cmd>Telescope oldfiles<CR>
 	nnoremap <localleader>z <cmd>lua require('plugins.telescope').pickers.zoxide()<CR>
 	nnoremap <localleader>; <cmd>Telescope command_history<CR>
@@ -482,7 +489,7 @@ if dein#tap('telescope.nvim')
 
 	" Location-specific find files/directories
 	nnoremap <localleader>n <cmd>lua require('plugins.telescope').pickers.plugin_directories()<CR>
-	nnoremap <localleader>w <cmd>lua require('plugins.telescope').pickers.notebook()<CR>
+	nnoremap <localleader>w <cmd>ZkNotes<CR>
 
 	" Navigation
 	nnoremap <leader>/ <cmd>Telescope current_buffer_fuzzy_find<CR>
@@ -507,6 +514,7 @@ endif
 if dein#tap('kommentary')
 	nnoremap <Leader>v <Plug>kommentary_line_default
 	xnoremap <Leader>v <Plug>kommentary_visual_default<C-c>
+	xnoremap <Leader>V <Plug>kommentary_visual_increase<C-c>
 endif
 
 if dein#tap('symbols-outline.nvim')
@@ -518,8 +526,18 @@ if dein#tap('vim-vsnip')
 	smap <expr><C-l> vsnip#available(1) ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
 endif
 
-if dein#tap('nvim-gps')
-	nnoremap <Leader>f <cmd>lua print(require'nvim-gps'.get_location())<CR>
+if dein#tap('nvim-navic')
+	nnoremap <Leader>f <cmd>call <SID>navic_toggle_winbar()<CR>
+
+	function! s:navic_toggle_winbar()
+		if get(b:, 'navic_winbar') == v:true
+			let b:navic_winbar = v:false
+			setlocal winbar=
+		else
+			let b:navic_winbar = v:true
+			setlocal winbar=%#TabLineSel#%#Special#%{%v:lua.require'nvim-navic'.get_location()%}
+		endif
+	endfunction
 endif
 
 if dein#tap('emmet-vim')
@@ -564,11 +582,6 @@ if dein#tap('vim-niceblock')
 	silent! xmap A  <Plug>(niceblock-A)
 endif
 
-if dein#tap('accelerated-jk')
-	nmap <silent> j <Plug>(accelerated_jk_gj)
-	nmap <silent> k <Plug>(accelerated_jk_gk)
-endif
-
 if dein#tap('vim-edgemotion')
 	nmap gj <Plug>(edgemotion-j)
 	nmap gk <Plug>(edgemotion-k)
@@ -604,7 +617,8 @@ endif
 if dein#tap('committia.vim')
 	let g:committia_hooks = {}
 	function! g:committia_hooks.edit_open(info)
-		resize 10
+		write
+		resize 15
 		imap <buffer><C-d> <Plug>(committia-scroll-diff-down-half)
 		imap <buffer><C-u> <Plug>(committia-scroll-diff-up-half)
 		imap <buffer><C-f> <Plug>(committia-scroll-diff-down-page)
@@ -699,7 +713,7 @@ if dein#tap('nvim-spectre')
 	nnoremap <Leader>so <cmd>lua require('spectre').open()<CR>
 	" Search current word
 	nnoremap <Leader>sw <cmd>lua require('spectre').open_visual({select_word=true})<CR>
-	xnoremap <silent><Leader>s :lua require('spectre').open_visual()<CR>
+	xnoremap <silent><Leader>s <Esc>:lua require('spectre').open_visual()<CR>
 	" Search in current file
 	nnoremap <silent><Leader>sp viw:lua require('spectre').open_file_search()<CR>
 endif
@@ -732,7 +746,7 @@ if dein#tap('vim-asterisk')
 	xmap gz# <Plug>(asterisk-gz#)
 endif
 
-if dein#tap('nvim-ts-hint-textobject')
+if dein#tap('nvim-treehopper')
 	omap              am <cmd>lua require('tsht').nodes()<CR>
 	xnoremap <silent> am :lua require('tsht').nodes()<CR>
 endif

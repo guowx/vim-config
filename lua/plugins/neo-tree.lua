@@ -32,16 +32,32 @@ local function get_current_directory(state)
 	return path
 end
 
+-- Enable a strong cursorline.
+local function set_cursorline()
+	vim.wo.winhighlight = 'CursorLine:WildMenu'
+	vim.wo.cursorline = true
+	vim.o.signcolumn = "auto"
+end
+
+-- Find previous neo-tree window and disable its cursorline.
+local function reset_cursorline()
+	local winid = vim.fn.win_getid(vim.fn.winnr('#'))
+	vim.api.nvim_win_set_option(winid, 'cursorline', false)
+end
+
 require('neo-tree').setup({
 	close_if_last_window = true,
 	-- popup_border_style = 'rounded',
 
 	event_handlers = {
+		-- Close neo-tree when opening a file.
 		{
-			-- Close neo-tree when opening a file.
 			event = 'file_opened',
-			handler = require('neo-tree').close_all,
+			handler = function() require('neo-tree').close_all() end,
 		},
+		-- Toggle strong cursorline highlight
+		{ event = 'neo_tree_buffer_enter', handler = set_cursorline },
+		{ event = 'neo_tree_buffer_leave', handler = reset_cursorline },
 	},
 
 	default_component_configs = {
@@ -139,6 +155,7 @@ require('neo-tree').setup({
 				end,
 			},
 		},
+		use_libuv_file_watcher = true,
 		follow_current_file = false,
 		group_empty_dirs = true,
 		bind_to_cwd = true, -- true creates a 2-way binding between vim's cwd and neo-tree's root
@@ -168,57 +185,6 @@ require('neo-tree').setup({
 			},
 			-- remains hidden even if visible is toggled to true
 			never_show = {},
-		},
-
-		renderers = {
-			directory = {
-				{ 'indent' },
-				{ 'icon' },
-				{ 'current_filter' },
-				{
-					'container',
-					width = '100%',
-					right_padding = 0,
-					--max_width = 60,
-					content = {
-						{ 'name', zindex = 10 },
-							-- {
-							--   'symlink_target',
-							--   zindex = 10,
-							--   highlight = 'NeoTreeSymbolicLinkTarget',
-							-- },
-						{ 'clipboard', zindex = 10 },
-						{ 'diagnostics', errors_only = true, zindex = 20, align = 'right' },
-					},
-				},
-			},
-			file = {
-				{ 'indent' },
-				{ 'icon' },
-				{
-					'container',
-					width = '100%',
-					right_padding = 0,
-					--max_width = 60,
-					content = {
-						{
-							'name',
-							use_git_status_colors = true,
-							zindex = 10
-						},
-						-- {
-						--   'symlink_target',
-						--   zindex = 10,
-						--   highlight = 'NeoTreeSymbolicLinkTarget',
-						-- },
-						{ 'clipboard', zindex = 10 },
-						{ 'bufnr', zindex = 10 },
-						{ 'modified', zindex = 20, align = 'right' },
-						{ 'diagnostics', zindex = 20, align = 'right' },
-						{ 'git_status', zindex = 20, align = 'right' },
-					},
-				},
-			},
 		},
 	},
 	buffers = {

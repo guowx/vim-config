@@ -35,12 +35,6 @@ function myactions.page_down(prompt_bufnr)
 	require('telescope.actions.set').shift_selection(prompt_bufnr, 5)
 end
 
-function myactions.change_directory(prompt_bufnr)
-	local entry = require('telescope.actions.state').get_selected_entry()
-	require('telescope.actions').close(prompt_bufnr)
-	vim.cmd('lcd ' .. entry.path)
-end
-
 -- Custom pickers
 
 local pickers = {}
@@ -78,19 +72,13 @@ pickers.zoxide = function()
 	})
 end
 
-pickers.notebook = function()
-	require'telescope.builtin'.find_files({
-		prompt_title = '[ Notebook ]',
-		cwd = '$HOME/docs/blog',
-	})
-end
-
 pickers.plugin_directories = function(opts)
+	local actions = require('telescope.actions')
 	local utils = require('telescope.utils')
 	local dir = vim.fn.expand('$VIM_DATA_PATH/dein/repos/github.com')
 
 	opts = opts or {}
-	opts.cmd = utils.get_default(opts.cmd, {
+	opts.cmd = vim.F.if_nil(opts.cmd, {
 		vim.o.shell,
 		'-c',
 		'find '..vim.fn.shellescape(dir)..' -mindepth 2 -maxdepth 2 -type d',
@@ -102,7 +90,6 @@ pickers.plugin_directories = function(opts)
 			value = line,
 			ordinal = line,
 			display = line:sub(dir_len + 2),
-			path = line,
 		}
 	end
 
@@ -118,9 +105,12 @@ pickers.plugin_directories = function(opts)
 		},
 		sorter = require('telescope.sorters').get_fuzzy_file(),
 		previewer = require('telescope.previewers.term_previewer').cat.new(opts),
-		attach_mappings = function(_, map)
-			map('i', '<cr>', myactions.change_directory)
-			map('n', '<cr>', myactions.change_directory)
+		attach_mappings = function(prompt_bufnr)
+			actions.select_default:replace(function()
+				local entry = require('telescope.actions.state').get_selected_entry()
+				actions.close(prompt_bufnr)
+				vim.cmd.lcd(entry.value)
+			end)
 			return true
 		end
 	}):find()
@@ -172,17 +162,19 @@ local setup = function()
 	telescope.setup{
 		defaults = {
 			sorting_strategy = 'ascending',
-			selection_strategy = 'closest',
+			-- selection_strategy = 'follow',
 			scroll_strategy = 'cycle',
 			cache_picker = {
 				num_pickers = 3,
 				limit_entries = 300,
 			},
 
-			prompt_prefix = '❯ ',
-			-- ♥ ❥ ➤ 🔭
+			prompt_prefix = "   ",
+			-- prompt_prefix = '❯ ',
 			selection_caret = '▍ ',
-			multi_icon = 'v',
+			multi_icon = '‣',
+
+			file_ignore_patterns = { 'node_modules' },
 			set_env = { COLORTERM = 'truecolor' },
 
 			-- Flex layout swaps between horizontal and vertical strategies
@@ -256,7 +248,7 @@ local setup = function()
 					['u'] = actions.drop_all,
 					['J'] = actions.toggle_selection + actions.move_selection_next,
 					['K'] = actions.toggle_selection + actions.move_selection_previous,
-					['<Space>'] = {
+					[' '] = {
 						actions.toggle_selection + actions.move_selection_next,
 						type = 'action',
 						opts = { nowait = true },
@@ -268,6 +260,7 @@ local setup = function()
 					['sv'] = actions.select_horizontal,
 					['sg'] = actions.select_vertical,
 					['st'] = actions.select_tab,
+					['l'] = actions.select_default,
 
 					['w'] = myactions.smart_send_to_qflist,
 					['e'] = myactions.send_to_qflist,
@@ -285,7 +278,7 @@ local setup = function()
 				sort_mru = true,
 				show_all_buffers = true,
 				ignore_current_buffer = true,
-				path_display = { shorten = 5 },
+				path_display = { truncate = 3 },
 				layout_config = {
 					width = width_for_nopreview,
 					height = height_dropdown_nopreview,
@@ -364,15 +357,15 @@ local setup = function()
 			},
 			lsp_definitions = {
 				layout_strategy = 'horizontal',
-				layout_config = { width = 0.95, height = 0.85, preview_width = 0.45 },
+				layout_config = { width = 0.7, height = 0.8, preview_width = 0.45 },
 			},
 			lsp_implementations = {
 				layout_strategy = 'horizontal',
-				layout_config = { width = 0.95, height = 0.85, preview_width = 0.45 },
+				layout_config = { width = 0.7, height = 0.8, preview_width = 0.45 },
 			},
 			lsp_references = {
 				layout_strategy = 'horizontal',
-				layout_config = { width = 0.95, height = 0.85, preview_width = 0.45 },
+				layout_config = { width = 0.7, height = 0.8, preview_width = 0.45 },
 			},
 			lsp_code_actions = {
 				theme = 'cursor',
@@ -386,15 +379,27 @@ local setup = function()
 			},
 		},
 		extensions = {
+			zoxide = {
+				prompt_title = '[ Zoxide directories ]',
+				mappings = {
+					default = {
+						action = function(selection)
+							vim.cmd.lcd(selection.path)
+						end,
+					},
+				},
+			},
 			['ui-select'] = {
 				require('telescope.themes').get_cursor {
 					layout_config = { width = 0.35, height = 0.35 },
 				}
-			}
+			},
 		}
 	}
 
 	-- Telescope extensions are loaded in each plugin.
+	-- But the persisted plugin must be immediately.
+	telescope.load_extension('persisted')
 end
 
 -- Public functions

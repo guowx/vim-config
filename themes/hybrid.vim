@@ -23,13 +23,14 @@ let g:terminal_color_15 = '#cfcfcf'
 
 " Float and selection {{{
 highlight! FloatBorder ctermfg=254 guifg=#525865
-highlight! link NormalFloat Pmenu
-" highlight! NormalFloat ctermbg=NONE ctermfg=NONE guibg=NONE guifg=NONE
-" highlight! NormalFloat ctermfg=250 ctermbg=237 guifg=#c5c8c6 guibg=#373b41
 highlight! WildMenu    ctermfg=NONE guifg=NONE ctermbg=97 guibg=#4D2238
+highlight! link NormalFloat Pmenu
+highlight! link FoldColumn  Comment
+
 " ctermbg=236 guibg=#323232
 " #ACAFAE  #2C3237
 " #2a2e36  #525865
+" #c5c8c6  #373b41
 " }}}
 
 " Tabline {{{
@@ -199,12 +200,6 @@ highlight! NeoTreeGitModified  guifg=#C88D8D
 highlight! NeoTreeGitUntracked guifg=#9C9D9C
 
 highlight! NeoTreeModified     guifg=#C88D8D
-" }}}
-
-" Plugin: NvimTree {{{
-" ---
-highlight! link NvimTreeIndentMarker FloatBorder
-
 " }}}
 
 " Plugin: Bqf {{{
